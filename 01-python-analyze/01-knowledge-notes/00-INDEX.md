@@ -1,62 +1,46 @@
-# Python 数据分析与编程实践 — 全局知识总索引与速查中心
+# 全局知识总索引与速查中心
 
-> 涵盖大学 Python 基础到进阶核心知识点，并直通实战项目 `LogDoc-Copilot`。
+> 本索引汇集 Python 数据分析课程核心知识地图、30秒速查表与全局避坑指南。
 
 ---
 
-## 🗺️ 全景知识地图与实战映射
+## 🗺️ 课程知识全景地图
 
-| 章节编号 | 核心模块 | 核心概念与技能点 | 实战项目应用场景 (LogDoc-Copilot) |
+- **第 4 章：Python 可迭代对象**
+  - [4.0 可迭代对象与迭代器总览](ch04-可迭代对象/01-可迭代对象与迭代器总览.md)
+  - [4.1 列表基础与常用方法](ch04-可迭代对象/02-列表基础与常用方法.md)
+  - [4.1.4 列表支持的运算符](ch04-可迭代对象/03-列表支持的运算符.md)
+  - [4.1.5 内置函数与高阶函数](ch04-可迭代对象/04-内置函数与高阶函数.md)
+  - [4.1.6 列表推导式语法与应用](ch04-可迭代对象/05-列表推导式语法与应用.md)
+  - [4.1.7 切片操作全解](ch04-可迭代对象/06-切片操作全解.md)
+  - 4.2 元组（Tuple）（进行中）
+  - 4.3 字典（Dictionary）
+  - 4.4 集合（Set）
+  - 4.5 序列解包
+
+---
+
+## ⚡ 30秒高频对比速查卡 (CheatSheet)
+
+| 数据结构 | 是否有序 | 是否可变 | 元素去重 | 访问方式 | 典型用途 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **列表 `list`** | 有序 | 可变 | 否 | 双向整数下标、切片 | 动态序列、按序排列数据 |
+| **元组 `tuple`** | 有序 | 不可变 | 否 | 双向整数下标、切片 | 固定只读配置、字典键、函数多返回值 |
+| **字典 `dict`** | 有序 (3.7+) | 可变 | 键唯一 | 通过键访问（`d[k]` 或 `d.get(k)`） | 键值映射、关联数据表、频次统计 |
+| **集合 `set`** | 无序 | 可变 | 是 (去重) | 迭代遍历、数学集合运算 | 快速去重、常数级关系判断（交并差） |
+
+---
+
+## 🛡️ 全局高频易错避坑表
+
+| 经典报错 / 陷阱场景 | 典型错误代码 | 根因剖析 | 正确修正 |
 | :--- | :--- | :--- | :--- |
-| **ch01** | 环境搭建与编程规范 | 解释器、虚拟环境、pip、PEP 8 规范 | 依赖管理与项目结构划分 |
-| **ch02** | 变量与简单数据类型 | 动态类型、字符串切片、格式化、Type Hints | FastAPI Schema 与类型约束 |
-| **ch03** | 程序控制结构 | if-elif-else、for/while 循环、break/continue | 意图识别条件路由、文件校验 |
-| **ch04** | 可迭代对象与推导式 | 列表/元组/字典/集合、推导式、生成器 | 指标聚合、去重 IP/用户、词频统计 |
-| **ch05** | 函数与高阶特性 | 参数传递(*args/**kwargs)、装饰器、闭包 | API 耗时装饰器、FastAPI 依赖注入 |
-| **ch06** | 文件与异常处理 | open、with、编码、try-except-finally、自定义异常 | 文本上传安全读取、全局异常拦截 |
-| **ch07** | 类与面向对象编程 | class、继承、多态、魔法方法(__enter__/__exit__) | 手写 DatabaseManager 上下文管理器 |
-| **ch08** | 正则表达式 | re.compile、findall、sub、命名分组、贪婪/非贪婪 | 日志解析、特征抽取与敏感脱敏 |
-
----
-
-## ⚡ 30秒核心避坑与速查卡 (CheatSheet)
-
-### 1. 字典/集合推导式 (课件 4)
-```python
-# 过滤并统计日志级别频次
-level_counts = {level: logs.count(level) for level in ["INFO", "WARNING", "ERROR"]}
-# 快速去重唯一 IP 集合
-unique_ips = {item["ip"] for item in log_items if "ip" in item}
-```
-
-### 2. 自定义上下文管理器与魔法方法 (课件 6 & 7)
-```python
-class SafeFile:
-    def __init__(self, filepath, mode="r"):
-        self.filepath = filepath
-        self.mode = mode
-    def __enter__(self):
-        self.file = open(self.filepath, self.mode, encoding="utf-8")
-        return self.file
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.file:
-            self.file.close()
-        # 返回 True 会吞掉异常，返回 False 会向上抛出异常
-        return False
-```
-
-### 3. 正则命名分组与脱敏 (课件 8)
-```python
-import re
-# 命名分组抽取
-pattern = re.compile(r"(?P<date>\d{4}-\d{2}-\d{2})\s+\[(?P<level>[A-Z]+)\]\s+(?P<msg>.*)")
-# 敏感手机号脱敏
-masked = re.sub(r"(\d{3})\d{4}(\d{4})", r"\1****\2", text)
-```
-
----
-
-## 📂 实战项目指引
-- 🚀 **项目工程目录**：[`02-practice-code/log-doc-copilot/`](../02-practice-code/log-doc-copilot/)
-- 📘 **详细系统设计与架构**：[`02-practice-code/log-doc-copilot/PROJECT_DESIGN.md`](../02-practice-code/log-doc-copilot/PROJECT_DESIGN.md)
-- 📊 **当前学习与推进进度**：[`PROGRESS.md`](../PROGRESS.md)
+| **误以为列表方法有返回值** | `lst = lst.append(1)`<br>`lst = lst.sort()` | `append`、`sort`、`reverse`、`extend`、`clear` 均是原地操作，返回值为 `None`。 | 去掉赋值，直接写 `lst.append(1)` 或用 `sorted(lst)`。 |
+| **列表通过新下标越界追加** | `lst = [1, 2]; lst[2] = 3` | 列表不会因指定新下标而自动扩容，只报 `IndexError`。 | 使用 `lst.append(3)` 或切片插入。 |
+| **推导式过滤末尾误加 else** | `[x for x in s if x > 0 else 0]` | 过滤型 `if` 在末尾，属于门卫安检机制，语法禁止写 `else`。 | 二选一映射改写为头部三元：`[x if x > 0 else 0 for x in s]`。 |
+| **乘法重复产生嵌套浅拷贝** | `m = [[0]*3]*3; m[0][0] = 1` | 外层 `*` 复制的是同一内层列表的引用，导致修改一处整列变动。 | 改用推导式独立创建：`[[0]*3 for _ in range(3)]`。 |
+| **跨步切片赋值长度不匹配** | `a = [1,2,3,4]; a[::2] = [10]` | 跨步切片坑位固定，右侧元素数量必须严格 1:1 对齐。 | 元素个数需与切片坑位数精确一致。 |
+| **切片赋值非可迭代对象** | `a[1:3] = 99` | 切片赋值右侧必须是可迭代序列。 | 改为可迭代对象：`a[1:3] = [99]`。 |
+| **字典转换只取键** | `list({'a': 1, 'b': 2})` | 字典直接放入 `list()` 时默认仅迭代其键。 | 需键值对用 `list(d.items())`。 |
+| **浅拷贝嵌套修改串扰** | `y = x.copy(); y[1].append(4)` | 浅拷贝仅克隆第一层外壳，内层嵌套容器引用仍相同。 | 需完全隔离时使用 `copy.deepcopy(x)`。 |
+| **可哈希性混入可变容器** | `d = {(1, [2]): 100}` | 元组自身可哈希的前提是内部**所有**元素均为不可变类型。 | 内部改用不可变类型：`d = {(1, (2,)): 100}`。 |
