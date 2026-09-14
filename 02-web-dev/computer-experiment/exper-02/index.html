@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galgame - 涅普姬雅</title>
+    
+    <!-- 优先本地离线库，失败时自动回退至 CDN -->
+    <script src="lib/live2d.min.js" onerror="this.src='https://cdn.jsdelivr.net/gh/dylanNew/live2d/webgl/Live2D/lib/live2d.min.js'"></script>
+    <script src="lib/pixi.min.js" onerror="this.src='https://cdn.jsdelivr.net/npm/pixi.js@6.5.8/dist/browser/pixi.min.js'"></script>
+    <script src="lib/cubism2.min.js" onerror="this.src='https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism2.min.js'"></script>
+    
+    <!-- 本地模型数据包 -->
+    <script src="live2d/Nepgear/model_data.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 35%, #2a144e 0%, #150d2a 60%, #080512 100%);
+            transition: background 0.6s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* ---------------- 顶部背景效果轻量 UI 控制栏 ---------------- */
+        #bg-ui-bar {
+            position: absolute;
+            top: 18px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        /* 场景地标标签 */
+        .scene-stamp {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(18, 14, 38, 0.65);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            color: #d8b4fe;
+            backdrop-filter: blur(8px);
+            letter-spacing: 0.5px;
+        }
+
+        .stamp-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #a855f7;
+            box-shadow: 0 0 8px #a855f7;
+        }
+
+        /* 背景氛围与动效切换组 */
+        .bg-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(18, 14, 38, 0.65);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 4px 10px;
+            border-radius: 22px;
+            backdrop-filter: blur(8px);
+        }
+
+        .bg-label {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            margin-right: 2px;
+            margin-left: 4px;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            background: rgba(168, 85, 247, 0.3);
+            border-color: #c084fc;
+            color: #fff;
+        }
+
+        .theme-btn.active {
+            background: #a855f7;
+            border-color: #e9d5ff;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+        }
+
+        /* ---------------- 背景微粒层 ---------------- */
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        /* ---------------- Live2D 立绘画布 ---------------- */
+        #live2d-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        /* ---------------- 纯净 Galgame 对话框 ---------------- */
+        #dialogue-box {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 60px);
+            max-width: 880px;
+            min-height: 135px;
+            background: rgba(16, 11, 34, 0.85);
+            border: 1.5px solid rgba(168, 85, 247, 0.55);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 24px 32px 18px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.25s;
+        }
+
+        #dialogue-box:hover {
+            border-color: rgba(192, 132, 252, 0.85);
+        }
+
+        /* 角色姓名牌 */
+        #speaker-name {
+            position: absolute;
+            top: -16px;
+            left: 28px;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.05rem;
+            padding: 5px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 4px 14px rgba(168, 85, 247, 0.45);
+        }
+
+        /* 对话正文与打字机光标 */
+        #dialogue-text {
+            font-size: 1.25rem;
+            line-height: 1.75;
+            color: #f8fafc;
+            margin-top: 6px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.85);
+            min-height: 2.2em;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2.5px;
+            height: 1.15em;
+            background: #38bdf8;
+            margin-left: 4px;
+            vertical-align: text-bottom;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* 推进提示指示器 */
+        .indicator {
+            align-self: flex-end;
+            font-size: 0.85rem;
+            color: #c084fc;
+            animation: pulse 1.2s infinite ease-in-out;
+            opacity: 0.85;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.35; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-2px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部背景氛围与效果轻量控制栏 -->
+    <div id="bg-ui-bar">
+        <!-- 场景地标标签 -->
+        <div class="scene-stamp">
+            <span class="stamp-dot"></span>
+            <span id="stamp-text">Planeptune · 姬雅的实验室</span>
+        </div>
+
+        <!-- 背景效果调节按钮组（不繁复，仅3个氛围色调+1个粒子开关） -->
+        <div class="bg-controls">
+            <span class="bg-label">背景效果:</span>
+            <button class="theme-btn active" data-theme="night">🌙 幽夜</button>
+            <button class="theme-btn" data-theme="sunset">🌆 霞光</button>
+            <button class="theme-btn" data-theme="sakura">🌸 樱粉</button>
+            <button id="btn-toggle-particles" class="theme-btn active" title="开启/关闭背景飘动粒子">✨ 粒子 [开]</button>
+        </div>
+    </div>
+
+    <!-- 动态背景光斑微粒层 -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Live2D 立绘画布 -->
+    <canvas id="live2d-canvas"></canvas>
+
+    <!-- 干净简练的 Galgame 对话框 -->
+    <div id="dialogue-box">
+        <div id="speaker-name">涅普姬雅</div>
+        <div id="dialogue-text"></div>
+        <div class="indicator">▼ 点击推进</div>
+    </div>
+
+    <script>
+        // 1. 背景效果配置与主题切换系统
+        const themes = {
+            night: {
+                bg: 'radial-gradient(circle at 50% 35%, #2a144e 0%, #150d2a 60%, #080512 100%)',
+                stamp: 'Planeptune · 姬雅的实验室 (夜间)',
+                colors: ['192, 132, 252', '56, 189, 248']
+            },
+            sunset: {
+                bg: 'radial-gradient(circle at 50% 35%, #561c36 0%, #2e0e22 60%, #11050d 100%)',
+                stamp: 'Planeptune · 姬雅的实验室 (傍晚)',
+                colors: ['251, 146, 60', '244, 114, 182']
+            },
+            sakura: {
+                bg: 'radial-gradient(circle at 50% 35%, #3e193e 0%, #220c26 60%, #0c0412 100%)',
+                stamp: 'Planeptune · 姬雅的花园阳台 (春樱)',
+                colors: ['244, 114, 182', '255, 255, 255']
+            }
+        };
+
+        let currentTheme = 'night';
+        let showParticles = true;
+
+        const stampText = document.getElementById('stamp-text');
+        const themeBtns = document.querySelectorAll('.theme-btn[data-theme]');
+        const btnToggleParticles = document.getElementById('btn-toggle-particles');
+        const particlesCanvas = document.getElementById('particles-canvas');
+
+        // 切换背景主题
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // 避免触发对话推进
+                const themeKey = btn.dataset.theme;
+                if (!themes[themeKey]) return;
+
+                currentTheme = themeKey;
+                themeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // 渐变更新背景色彩与地标文字
+                document.body.style.background = themes[themeKey].bg;
+                stampText.textContent = themes[themeKey].stamp;
+            });
+        });
+
+        // 切换粒子动效
+        btnToggleParticles.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showParticles = !showParticles;
+            if (showParticles) {
+                btnToggleParticles.classList.add('active');
+                btnToggleParticles.textContent = '✨ 粒子 [开]';
+                particlesCanvas.style.opacity = '1';
+            } else {
+                btnToggleParticles.classList.remove('active');
+                btnToggleParticles.textContent = '✨ 粒子 [关]';
+                particlesCanvas.style.opacity = '0';
+            }
+        });
+
+        // 2. 动态光斑粒子逻辑
+        (function initParticles() {
+            const ctx = particlesCanvas.getContext('2d');
+            let width, height;
+            const particles = [];
+            const count = 35;
+
+            function resize() {
+                width = particlesCanvas.width = window.innerWidth;
+                height = particlesCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 2.5 + 1.2,
+                    vx: (Math.random() - 0.5) * 0.35,
+                    vy: -(Math.random() * 0.5 + 0.25),
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+
+            function animate() {
+                if (showParticles) {
+                    ctx.clearRect(0, 0, width, height);
+                    const colorPool = themes[currentTheme].colors;
+
+                    for (let i = 0; i < particles.length; i++) {
+                        const p = particles[i];
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.y < -10) {
+                            p.y = height + 10;
+                            p.x = Math.random() * width;
+                        }
+
+                        const color = colorPool[i % colorPool.length];
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${color}, ${p.alpha})`;
+                        ctx.shadowBlur = 8;
+                        ctx.shadowColor = `rgba(${color}, 0.8)`;
+                        ctx.fill();
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+
+        // 3. 剧情台词列表
+        const script = [
+            { name: "涅普姬雅", text: "你好！我是涅普姬雅（Nepgear）。", motion: "start" },
+            { name: "涅普姬雅", text: "你可以点击右上角的背景效果按钮，切换房间的光影氛围哦！", motion: "idle" },
+            { name: "涅普姬雅", text: "无论是【幽夜】、【霞光】还是【樱粉】，背景都会呈现不同的光斑与色调呢~", motion: "tap_D_REF.PT_HEAD" },
+            { name: "涅普姬雅", text: "只要鼠标单击屏幕或者对话框，就能继续推进下一句台词。", motion: "idle" },
+            { name: "涅普姬雅", text: "平时我最喜欢做机械研究和写程序了，很高兴能在这里陪着你！", motion: "tap_D_REF.PT_HEAD" },
+            { name: "涅普姬雅", text: "对话全部结束啦，再次点击就会重新从第一句开始循环循环哦~", motion: "start" }
+        ];
+
+        let currentIndex = 0;
+        let live2dModel = null;
+        let isTyping = false;
+        let typingTimer = null;
+
+        const nameEl = document.getElementById('speaker-name');
+        const textEl = document.getElementById('dialogue-text');
+
+        // 打字机更新台词
+        function showDialogue(index) {
+            clearTimeout(typingTimer);
+            const item = script[index];
+            nameEl.textContent = item.name;
+            const fullText = item.text;
+            let charIndex = 0;
+            isTyping = true;
+            textEl.innerHTML = '';
+
+            // 触发模型动作
+            if (live2dModel && item.motion) {
+                try { live2dModel.motion(item.motion); } catch (e) {}
+            }
+
+            function typeNext() {
+                if (charIndex < fullText.length) {
+                    charIndex++;
+                    textEl.innerHTML = fullText.slice(0, charIndex) + '<span class="typing-cursor"></span>';
+                    typingTimer = setTimeout(typeNext, 25);
+                } else {
+                    textEl.textContent = fullText;
+                    isTyping = false;
+                }
+            }
+            typeNext();
+        }
+
+        // 推进台词
+        function nextDialogue() {
+            if (isTyping) {
+                clearTimeout(typingTimer);
+                textEl.textContent = script[currentIndex].text;
+                isTyping = false;
+                return;
+            }
+            currentIndex = (currentIndex + 1) % script.length;
+            showDialogue(currentIndex);
+        }
+
+        // 点击推进
+        document.addEventListener('click', nextDialogue);
+
+        // 键盘按键推进
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                nextDialogue();
+            }
+        });
+
+        // 初始显示第一句
+        showDialogue(0);
+
+        // 4. 初始化 Pixi.js 和 Live2D 模型
+        async function initLive2D() {
+            try {
+                const canvas = document.getElementById('live2d-canvas');
+                const app = new PIXI.Application({
+                    view: canvas,
+                    autoStart: true,
+                    resizeTo: window,
+                    backgroundAlpha: 0
+                });
+
+                // 优先使用本地内嵌数据渲染
+                if (window.NEPGEAR_MODEL_DATA) {
+                    const settings = new PIXI.live2d.Cubism2ModelSettings(window.NEPGEAR_MODEL_DATA);
+                    live2dModel = await PIXI.live2d.Live2DModel.from(settings);
+                } else {
+                    live2dModel = await PIXI.live2d.Live2DModel.from('live2d/Nepgear/model.json');
+                }
+
+                app.stage.addChild(live2dModel);
+
+                // 自适应屏幕大小并居中展示立绘（保持放大与下移合适高度）
+                function resizeModel() {
+                    if (!live2dModel) return;
+                    const baseHeight = live2dModel.height / (live2dModel.scale.y || 1);
+                    const scale = (window.innerHeight * 1.18) / baseHeight;
+                    live2dModel.scale.set(scale);
+                    live2dModel.x = (window.innerWidth - live2dModel.width) / 2;
+                    live2dModel.y = window.innerHeight * 0.08;
+                }
+
+                resizeModel();
+                window.addEventListener('resize', resizeModel);
+
+                // 点击立绘触发摸头动作
+                live2dModel.on('hit', () => {
+                    try { live2dModel.motion('tap_D_REF.PT_HEAD'); } catch (e) {}
+                });
+            } catch (err) {
+                console.error("Live2D 加载异常:", err);
+            }
+        }
+
+        initLive2D();
+    </script>
+</body>
+</html>
