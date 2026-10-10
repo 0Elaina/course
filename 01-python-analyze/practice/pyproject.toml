@@ -1,0 +1,17 @@
+[project]
+name = "practice"
+version = "0.1.0"
+authors = [
+    { name = "nepgear", email = "471198414@qq.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.3",
+]
+
+[project.scripts]
+practice = "practice:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"

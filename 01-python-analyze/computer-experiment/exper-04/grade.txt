@@ -1,0 +1,11 @@
+id,name,teacher,pingshi,qimo,zongping
+202101,zs,wang,90,88,0
+202102,ls,li,80,88,0
+202103,ww,li,77,92,0
+202104,aa,wang,69,93,0
+202105,bb,liu,85,89,0
+202106,cc,huang,82,74,0
+202107,dd,liu,89,56,0
+202108,ee,wang,89,56,0
+202109,ff,huang,89,56,0
+202110,gg,alice,89,56,0

@@ -36,3 +36,24 @@ Thumbs.db
 desktop.ini
 *.tmp
 *.temp
+
+
+# 忽略所有层级下的 .venv 文件夹
+.venv/
+
+# 忽略 Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 忽略 uv 的锁文件和缓存（可选，通常 uv.lock 建议提交，但看个人习惯）
+# uv.lock
+# .uv/
+
+# 忽略 IDE 配置文件夹
+.idea/
+.vscode/
+
+# 忽略系统文件（如 Mac 的 .DS_Store 或 Windows 的 Thumbs.db）
+.DS_Store
+Thumbs.db

@@ -1,0 +1,11 @@
+[project]
+name = "computer-experiment"
+version = "0.1.0"
+authors = [
+    { name = "nepgear", email = "471198414@qq.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.3",
+]
+
