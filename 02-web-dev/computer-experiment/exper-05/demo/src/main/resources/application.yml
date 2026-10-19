@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: demo
+
+  # 数据源配置（H2 文件存储模式）
+  datasource:
+    # 文件模式 URL：保存在项目根目录下的 data 目录中（demodb.mv.db）
+    # AUTO_SERVER=TRUE 允许 Spring Boot 和外部控制台/工具同时连接，避免文件锁冲突
+    url: jdbc:h2:file:./data/demodb;MODE=MySQL;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # H2 控制台配置（访问路径：http://localhost:8080/h2-console）
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+  # 启动自动执行初始化 SQL 脚本
+  sql:
+    init:
+      mode: always # 强制执行初始化（文件模式下必须显式设为 always）
+      schema-locations: classpath:schema.sql # 建表脚本
+      data-locations: classpath:data.sql     # 初始数据脚本（可选）
+      encoding: UTF-8
+
+# MyBatis 相关配置
+mybatis:
+  # XML 映射文件存放路径
+  mapper-locations: classpath:mapper/**/*.xml
+  # 实体类所在包（供别名使用）
+  type-aliases-package: com.demo.entity,com.demo.model
+  configuration:
+    # 开启驼峰命名自动映射（如 user_id -> userId）
+    map-underscore-to-camel-case: true
+    # 控制台打印 SQL 执行日志，方便调试
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
