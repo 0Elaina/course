@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: demo
+
+  # 数据源配置（H2 文件存储模式）
+  datasource:
+    # 文件模式 URL：保存在项目根目录下的 data 目录中（demodb.mv.db）
+    # MODE=MySQL：开启 MySQL 语法兼容模式
+    # AUTO_SERVER=TRUE：允许 Spring Boot 与外部控制台/工具同时连接，防止文件独占锁
+    # DB_CLOSE_DELAY=-1：最后一个连接断开时不丢失缓存数据
+    url: jdbc:h2:file:./data/demodb;MODE=MySQL;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # H2 控制台配置（访问路径：http://localhost:8080/h2-console）
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+  # 启动自动执行初始化 SQL 脚本
+  sql:
+    init:
+      mode: always # 文件模式下必须显式设为 always 才会执行初始化
+      schema-locations: classpath:schema.sql # 建表脚本
+      data-locations: classpath:data.sql     # 初始数据脚本
+      encoding: UTF-8
+      continue-on-error: true # 遇异常容错继续启动
+
+# MyBatis 相关配置
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.demo.entity,com.demo.model
+  configuration:
+    map-underscore-to-camel-case: true # 开启驼峰命名自动映射（如 dept_id -> deptId）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印 SQL 执行日志
+
+# PageHelper 分页插件配置
+pagehelper:
+  helper-dialect: h2 # 指定数据库方言为 H2
+  reasonable: true   # 分页合理化参数：pageNum <= 0 时查询第一页，pageNum > pages 时查询最后一页
+  support-methods-arguments: true # 支持通过 Mapper 接口参数来传递分页参数
+  params: count=countSql
