@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>th:switch与条件判断演示</title>
+    <style>
+        body { background-color: #e0ffff; font-family: sans-serif; padding: 40px; }
+        .box { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        input[type="text"] { padding: 6px 10px; width: 60%; }
+        input[type="submit"] { padding: 6px 16px; background: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .result-box { margin-top: 15px; padding: 12px; background: #f0f7ff; border-left: 4px solid #0d6efd; }
+        .nav-links { text-align: center; margin-top: 25px; font-size: 14px; }
+        a { color: #0d6efd; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>【实例3.1 - 5】条件判断（th:switch、th:if/th:unless）</h3>
+        <hr>
+        <!-- PPT 原版表单 -->
+        <form th:action="@{/th/switch}" th:object="${cate}" method="post">
+            <input th:type="text" th:field="*{tcode}" th:placeholder="'请输入商品大类编号 (1/2/3/4/其他)'"/>
+            <input th:type="submit" value="确定">
+        </form>
+
+        <div class="result-box">
+            <!-- 只有输入不为空时显示 -->
+            <p th:text="'您选择的类别编号为：' + ${cate.tcode}" th:if="${cate != null && cate.tcode != null && cate.tcode != ''}"></p>
+            
+            <strong>匹配的大类名称：</strong>
+            <div th:if="${cate != null}" th:switch="${cate.tcode}" style="display: inline-block;">
+                <span th:case="'1'">食品</span>
+                <span th:case="'2'">服装</span>
+                <span th:case="'3'">数码</span>
+                <span th:case="'4'">家用电器</span>
+                <span th:case="*" th:text="'其他商品'" th:unless="${cate.tcode == null || cate.tcode == ''}"></span>
+                <span th:case="*" th:if="${cate.tcode == null || cate.tcode == ''}" style="color: #888;">(暂未输入编号)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a th:href="@{/th/switch(tcode='1')}">快速测试：食品(1)</a> | 
+        <a th:href="@{/th/switch(tcode='3')}">快速测试：数码(3)</a> | 
+        <a th:href="@{/th/switch(tcode='99')}">快速测试：其他(99)</a> | 
+        <a th:href="@{/}">返回实验导航总览</a>
+    </div>
+</body>
+</html>

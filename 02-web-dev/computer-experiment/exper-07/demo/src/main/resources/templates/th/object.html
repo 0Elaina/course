@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>th:object演示</title>
+    <style>
+        body { background-color: #e0ffff; font-family: sans-serif; padding: 40px; }
+        .card { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .row-item { margin: 12px 0; font-size: 16px; }
+        .nav-links { text-align: center; margin-top: 25px; font-size: 14px; }
+        a { color: #0d6efd; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h3>【实例3.1 - 2】th:object 显示对象演示</h3>
+        <hr>
+        <!-- PPT 原版演示语句 -->
+        <div th:object="${sup}">
+            <div class="row-item"><strong>商家：</strong><span th:text="*{sname}"></span></div>
+            <div class="row-item"><strong>微信：</strong><span th:text="${sup.sweixin}"></span></div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <p>测试链接：
+            <a th:href="@{/th/object(sname='陕西洛川苹果有限公司',sweixin='8123456-aa.com')}">PPT原版参数测试</a> | 
+            <a th:href="@{/th/input}">去表单输入页</a> | 
+            <a th:href="@{/}">返回实验导航总览</a>
+        </p>
+    </div>
+</body>
+</html>

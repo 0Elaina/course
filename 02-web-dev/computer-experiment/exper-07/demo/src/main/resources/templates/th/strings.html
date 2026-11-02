@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>th:strings 字符串处理演示</title>
+    <style>
+        body { background-color: #e0ffff; font-family: sans-serif; padding: 30px; }
+        .box { max-width: 650px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .form-row { margin-bottom: 12px; }
+        input[type="text"] { padding: 6px 8px; width: 200px; }
+        input[type="submit"] { padding: 6px 18px; background: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .section { margin-top: 15px; padding: 10px 15px; background: #f8f9fa; border-radius: 5px; }
+        .nav-links { text-align: center; margin-top: 25px; font-size: 14px; }
+        a { color: #0d6efd; text-decoration: none; margin: 0 10px; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; color: #d63384; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>【实例3.1 - 6】字符串处理（拼接、#strings对象、关系比较）</h3>
+        <hr>
+        <form th:action="@{/th/strings}" th:object="${cate}" method="post">
+            <div class="form-row">
+                <label>分类编码 (如 11A, 21B, 31C)：</label>
+                <input th:type="text" th:field="*{tcode}" placeholder="长度为3位的编码"/>
+            </div>
+            <div class="form-row">
+                <label>分类名称 (如 苹果、休闲男装)：</label>
+                <input th:type="text" th:field="*{tname}" placeholder="输入分类名称"/>
+                <input th:type="submit" value="提交确定">
+            </div>
+        </form>
+
+        <!-- 1. 字符串拼接演示 (+ 与 |...|) -->
+        <div class="section">
+            <h4>1. 字符串拼接演示</h4>
+            <p>使用 + 号拼接：<span th:text="'【分类】' + (${cate.tname} != null ? ${cate.tname} : '未命名') + '（' + (${cate.tcode} != null ? ${cate.tcode} : '无') + '）'"></span></p>
+            <p>使用 |...| 语法糖拼接：<span th:text="|编码：${cate.tcode}，名称：${cate.tname}|"></span></p>
+        </div>
+
+        <!-- 2. #strings 常用方法与逻辑判断 (PPT案例复现) -->
+        <div class="section">
+            <h4>2. #strings 处理与编码识别 (PPT案例逻辑)</h4>
+            <!-- 检查是否输入完整 -->
+            <div th:if="${#strings.isEmpty(cate.tcode) || #strings.isEmpty(cate.tname)}" style="color: #666;">
+                ⚠️ 提示：请输入分类编码与名称查看识别逻辑。
+            </div>
+
+            <div th:unless="${#strings.isEmpty(cate.tcode) || #strings.isEmpty(cate.tname)}">
+                <p>编码长度检测：长度为 <span th:text="${#strings.length(cate.tcode)}"></span> 
+                   <span th:if="${#strings.length(cate.tcode) == 3}" style="color: green;">(合规3位)</span>
+                   <span th:unless="${#strings.length(cate.tcode) == 3}" style="color: red;">(需为3位)</span>
+                </p>
+
+                <!-- 首位判断 (startsWith) -->
+                <p th:if="${#strings.startsWith(cate.tcode, '1')}">
+                    所属大类：<strong>食品类 (以1打头)</strong>，
+                    细分类别：
+                    <span th:switch="${#strings.substring(cate.tcode, 1, 2)}">
+                        <span th:case="'1'">新鲜水果</span>
+                        <span th:case="'2'">休闲零食</span>
+                        <span th:case="'3'">海鲜生鲜</span>
+                        <span th:case="*">其他食品</span>
+                    </span>
+                </p>
+
+                <p th:unless="${#strings.startsWith(cate.tcode, '1')}">
+                    所属大类：
+                    <span th:if="${#strings.substring(cate.tcode, 0, 1) eq '2'}">服饰穿戴类</span>
+                    <span th:if="${#strings.substring(cate.tcode, 0, 1) eq '3'}">数码电子类</span>
+                    <span th:if="${#strings.substring(cate.tcode, 0, 1) gt '3'}">其它大宗商品</span>
+                </p>
+
+                <!-- 关系谓词演示 eq / ne -->
+                <p>关系比较测试：
+                    编码是否等于'11A'：<span th:text="${cate.tcode eq '11A'}"></span> | 
+                    名称是否非空：<span th:text="${!#strings.isEmpty(cate.tname)}"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a th:href="@{/th/strings(tcode='11A',tname='红富士苹果')}">快速测试：11A 红富士苹果</a> | 
+        <a th:href="@{/th/strings(tcode='21B',tname='休闲衬衫')}">快速测试：21B 休闲衬衫</a> | 
+        <a th:href="@{/}">返回实验导航总览</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>实验7：Thymeleaf模板引擎案例导览</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        body { background-color: #f0f2f5; padding-bottom: 50px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+        .hero { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 35px 20px; margin-bottom: 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .case-card { height: 100%; border-radius: 8px; border: 1px solid #e1e4e8; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.2s ease; display: flex; flex-direction: column; }
+        .case-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); border-color: #0d6efd; }
+        .case-body { padding: 18px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .case-title { font-size: 17px; font-weight: 600; color: #212529; margin-bottom: 8px; }
+        .case-tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 4px; background: #e7f1ff; color: #0d6efd; font-family: monospace; margin-bottom: 10px; }
+        .case-desc { font-size: 13px; color: #6c757d; line-height: 1.5; margin-bottom: 14px; }
+        .btn-visit { background: #0d6efd; color: white; text-align: center; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 14px; transition: background 0.15s; }
+        .btn-visit:hover { background: #0b5ed7; color: white; }
+        .section-header { font-size: 18px; font-weight: bold; margin: 25px 0 15px 0; padding-left: 10px; border-left: 4px solid #0d6efd; color: #333; }
+    </style>
+</head>
+<body>
+
+    <div class="hero text-center">
+        <h2 style="margin: 0 0 10px 0;">Web开发实验：Thymeleaf 模板引擎案例复现</h2>
+        <p style="margin: 0; opacity: 0.9; font-size: 15px;">《SpringBoot实用教程（第4版）》第3章 完整案例集合</p>
+    </div>
+
+    <div class="container">
+
+        <!-- 模块一 -->
+        <div class="section-header">一、Thymeleaf 常用标签与语法（实例 3.1）</div>
+        <div class="row">
+            <!-- 1. th:text -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">th:text / ?: 默认值</span>
+                            <div class="case-title">1. 显示文本 (th:text)</div>
+                            <div class="case-desc">从后台接收文本并显示在标签体中，演示默认值运算符号与参数传递。</div>
+                        </div>
+                        <a th:href="@{/th/text(sname='陕西洛川苹果有限公司')}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. th:object -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">th:object / *{...}</span>
+                            <div class="case-title">2. 显示对象 (th:object)</div>
+                            <div class="case-desc">接收模型实体对象 Supplier，演示 *{属性} 与 ${obj.属性} 两种引用方式。</div>
+                        </div>
+                        <a th:href="@{/th/object(sname='陕西洛川苹果有限公司',sweixin='8123456-aa.com')}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. th:field -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">th:field / 表单绑定</span>
+                            <div class="case-title">3. 表单输入提交 (th:field)</div>
+                            <div class="case-desc">绑定后台对象和表单数据，集成了 th:name 与 th:value 的初值呈现与提交。</div>
+                        </div>
+                        <a th:href="@{/th/input}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. th:href -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">th:href / @{...} 表达式</span>
+                            <div class="case-title">4. 超链接 (th:href)</div>
+                            <div class="case-desc">通过 @{...} 引入相对路径、绝对路径及带参 URL，动态拼接查询字符串。</div>
+                        </div>
+                        <a th:href="@{/th/href}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. th:switch -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">th:switch / th:case / th:if</span>
+                            <div class="case-title">5. 条件判断 (switch/if)</div>
+                            <div class="case-desc">输入分类编号，使用 th:switch、th:case 及 th:if/unless 实施条件分支渲染。</div>
+                        </div>
+                        <a th:href="@{/th/switch(tcode='1')}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. #strings -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">#strings / + / |...| / eq</span>
+                            <div class="case-title">6. 字符串处理与关系比较</div>
+                            <div class="case-desc">演示 + 拼接、|...| 语法糖、#strings 判空截取，以及 eq/ne/gt 等判断。</div>
+                        </div>
+                        <a th:href="@{/th/strings(tcode='11A',tname='红富士苹果')}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. th:each -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">th:each / #numbers / th:src</span>
+                            <div class="case-title">7. 循环遍历与格式化 (th:each)</div>
+                            <div class="case-desc">遍历商品集合，结合 curStat 序号、#numbers 千分位/小数格式化与图片展示。</div>
+                        </div>
+                        <a th:href="@{/th/each}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. utility -->
+            <div class="col-md-4 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">#dates / #lists / #bools</span>
+                            <div class="case-title">8. 内置公用对象 (Utility)</div>
+                            <div class="case-desc">演示日期时间格式化、列表大小与包含判断、布尔逻辑与字符串工具。</div>
+                        </div>
+                        <a th:href="@{/th/utility}" class="btn-visit">立即访问演示 ➔</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模块二 -->
+        <div class="section-header">二、Hibernate Validator 数据校验框架（实例 3.2）</div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">@Validated / BindingResult / th:errors</span>
+                            <div class="case-title">商品入库表单验证</div>
+                            <div class="case-desc">对商品号、名称、分类编码、价格、库存及推广文字嵌入校验约束，在前端以红色错误提示呈现。全部通过则跳转至成功信息页面。</div>
+                        </div>
+                        <a th:href="@{/valid}" class="btn-visit" style="background: #198754;">进入验证器表单 ➔</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块三 -->
+            <div class="col-md-6 mb-3">
+                <div class="case-card">
+                    <div class="case-body">
+                        <div>
+                            <span class="case-tag">Bootstrap 5 + Thymeleaf 整合</span>
+                            <div class="case-title">网上商城商品推荐展示（实例 3.4）</div>
+                            <div class="case-desc">使用 Bootstrap 网格系统与卡片布局，结合 Thymeleaf 的循环与静态资源解析，开发响应式商品展示页面。</div>
+                        </div>
+                        <a th:href="@{/bootstrap}" class="btn-visit" style="background: #495057;">查看网上商城展示 ➔</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

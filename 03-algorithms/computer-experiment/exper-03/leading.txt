@@ -1,7 +1,0 @@
-Python
-python
-python
-python
-cpp
-rust
-typescript

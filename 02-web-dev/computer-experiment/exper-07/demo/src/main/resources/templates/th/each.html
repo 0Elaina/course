@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>th:each演示</title>
+    <style>
+        body { background-color: #e0ffff; font-family: sans-serif; padding: 30px; }
+        .mytbl {
+            margin: auto;
+            text-align: center;
+            width: 650px;
+            background-color: #fff;
+            border-collapse: collapse;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .mytbl th { padding: 12px; font-size: 16px; background-color: lightblue; border: 1px solid #999; }
+        .mytbl td { padding: 10px; border: 1px solid #ccc; }
+        .mytbl tr:hover { background-color: #f9fbfd; }
+        .nav-links { text-align: center; margin-top: 25px; font-size: 14px; }
+        a { color: #0d6efd; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2>【实例3.1 - 7】th:each 循环遍历与数值格式化演示</h2>
+    </div>
+
+    <!-- PPT 原版表格结构与标签属性 -->
+    <table border="1" cellspacing="0" class="mytbl">
+        <tr style="background-color: lightblue">
+            <th style="width: 60px;">序号</th>
+            <th style="width: 400px;">商品信息</th>
+            <th style="width: 190px;">商品图片</th>
+        </tr>
+        <tr th:each="commodity, curStat : ${commoditys}">
+            <!-- 状态变量 count -->
+            <td th:text="${curStat.count}"></td>
+            
+            <td style="text-align: left; padding: 10px 18px;">
+                <h4 th:text="${commodity.pname}" style="text-align: center; margin: 5px 0 10px 0;"></h4>
+                <p style="margin: 4px 0;">&nbsp;&nbsp;&nbsp;商家编码：<span th:text="${commodity.scode}"></span></p>
+                <p style="margin: 4px 0;">&nbsp;&nbsp;&nbsp;分类编码：<span th:text="${commodity.tcode}"></span></p>
+                <!-- #numbers.formatDecimal 格式化金额 -->
+                <p style="margin: 4px 0;">&nbsp;&nbsp;&nbsp;价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格：<span th:text="${#numbers.formatDecimal(commodity.pprice, 1, 'COMMA', 2, 'POINT')}"></span> 元</p>
+                <!-- #numbers.formatInteger 格式化库存 -->
+                <p style="margin: 4px 0;">&nbsp;&nbsp;&nbsp;库&nbsp;&nbsp;存&nbsp;&nbsp;量：<span th:text="${#numbers.formatInteger(commodity.stocks, 1, 'COMMA')}"></span></p>
+            </td>
+
+            <td>
+                <!-- th:src 引用静态图片 -->
+                <img th:src="'/image/' + ${commodity.image}" style="height: 150px; width: 150px; border-radius: 6px; object-fit: cover;" th:alt="${commodity.pname}"/>
+            </td>
+        </tr>
+    </table>
+
+    <div class="nav-links">
+        <a th:href="@{/th/utility}">前往公用对象演示页</a> | 
+        <a th:href="@{/}">返回实验导航总览</a>
+    </div>
+</body>
+</html>

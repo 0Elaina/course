@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bootstrap应用</title>
+    <!-- 引入项目内置的 Bootstrap 样式文件 -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        body { background-color: #adb5bd; min-height: 100vh; padding-top: 30px; }
+        .main-container { max-width: 1000px; margin: 0 auto; }
+        .product-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .product-img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 3px solid #dee2e6;
+        }
+        .product-title {
+            font-size: 16px;
+            font-weight: bold;
+            min-height: 48px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        .meta-info {
+            font-size: 14px;
+            color: #555;
+            text-align: left;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        .price {
+            color: #d63384;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h2 class="text-center mb-3" style="color: #212529;">欢迎光临网上商城</h2>
+        <h5 style="color: #333; margin-bottom: 20px;">特别推荐</h5>
+
+        <div class="row">
+            <div class="col-md-4 mb-3" th:each="commodity : ${commoditys}">
+                <div class="product-card">
+                    <img th:src="'/image/' + ${commodity.image}" class="product-img" th:alt="${commodity.pname}"/>
+                    <div class="product-title" th:text="${commodity.pname}"></div>
+                    <div class="meta-info">
+                        <div>商家：<span th:text="${commodity.scode}"></span></div>
+                        <div>分类：<span th:text="${commodity.tcode}"></span></div>
+                        <div>价格：<span class="price" th:text="${#numbers.formatDecimal(commodity.pprice, 1, 'COMMA', 2, 'POINT')} + ' ¥'"></span></div>
+                        <div>库存：<span th:text="${#numbers.formatInteger(commodity.stocks, 1, 'COMMA')}"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a th:href="@{/}" class="btn btn-secondary btn-sm" style="background: #495057;">返回实验导航总览</a>
+        </div>
+    </div>
+</body>
+</html>

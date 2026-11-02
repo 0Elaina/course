@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>验证通过</title>
+    <style>
+        body { background-color: #e0ffff; font-family: sans-serif; padding: 40px; }
+        .box { max-width: 500px; margin: 0 auto; background: white; padding: 25px 35px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .item { margin: 10px 0; font-size: 15px; }
+        .nav-links { text-align: center; margin-top: 25px; font-size: 14px; }
+        a { color: #0d6efd; text-decoration: none; margin: 0 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div th:object="${com}">
+            <h3 th:text="'数据提交成功！'" style="text-align: center; color: #198754;"></h3>
+            <p th:text="'入库商品的信息如下：'" style="font-weight: bold;"></p>
+            <hr>
+            <div class="item" th:text="'商品号：' + ${com.pid}"></div>
+            <div class="item" th:text="'商品名称：' + ${com.pname}"></div>
+            <div class="item" th:text="'商品分类：' + ${com.tcode}"></div>
+            <div class="item" th:text="'商品价格：' + ${com.pprice}"></div>
+            <div class="item" th:text="'库存量：' + ${com.stocks}"></div>
+            <div class="item" th:text="'推广文字：' + ${com.textadv}"></div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a th:href="@{/valid}">重新进行表单验证</a> | 
+        <a th:href="@{/bootstrap}">前往Bootstrap整合案例</a> | 
+        <a th:href="@{/}">返回实验导航总览</a>
+    </div>
+</body>
+</html>
